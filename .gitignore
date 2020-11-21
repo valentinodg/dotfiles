@@ -1,2 +1,6 @@
 config/.config/zsh/.zsh_history
 config/.config/zsh/.zcompdump
+
+config/.config/nvim/plugged
+config/.config/nvim/autoload
+config/.config/nvim/.undodir
