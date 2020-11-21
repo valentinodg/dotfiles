@@ -1,11 +1,9 @@
 #!/bin/zsh
 
-os_release=$(awk -F '["=]+' '$1=="ID"{print $2}' /etc/os-release)
-# os_release=$(sed -nE 's/^ID="([^"]+)".*/\1/p' /etc/os-release)
-# os_release=$(grep -oP '^ID="\K[^"]+' /etc/os-release)
+. /etc/os-release
 
 # VOID
-if [[ $os_release = "void" ]]; then
+if [[ $ID = "void" ]]; then
     alias xu='sudo xbps-install -Suv'
     alias xh="sudo vpm"
     alias gu="xh up; xh cl; xh ar; vkl; vkr;"
@@ -26,7 +24,7 @@ if [[ $os_release = "void" ]]; then
 fi
 
 # ARTIX
-if [[ $os_release = "artix" ]]; then
+if [[ $ID = "artix" ]]; then
     
     [ -x "$(command -v nvim)" ] && \
         alias n='nvim' && \
