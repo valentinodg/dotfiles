@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# vmware-user-suid-wrapper &
+# xrdb ${XDG_CONFIG_HOME:-$HOME/.config}/x11/xresources &
+
+setxkbmap it &
+xset r rate 200 50 &
+picom &
+# feh --no-fehbg --randomize --bg-scale $HOME/wallpapers &
