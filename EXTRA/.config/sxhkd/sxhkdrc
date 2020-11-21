@@ -1,0 +1,95 @@
+# start terminal emulator [st]
+alt + Return
+	oalacritty
+
+# start program launcher [dmenu]
+# alt + d
+# 	dmenu_run -m 0 -fn "Terminus:size=18:style:bold" -nb "#000000" -nf "#bbbbbb" -sb "#222222" -sf "#ff00ff"
+
+alt + p
+    rofi -show drun
+
+# make sxhkd reload its configuration files:
+alt + ctrl + r
+	pkill -USR1 -x sxhkd
+
+# quit bspwm
+alt + shift + e
+	bspc quit
+
+# restart bspwm
+alt + r
+    bspc wm -r
+
+# close node
+alt + q
+	bspc node -c
+
+# kill node
+alt + shift + q
+    bspc node -k
+
+# alternate between the tiled and monocle layout
+alt + m
+	bspc desktop -l next
+
+alt + e
+    bspc node -t fullscreen
+
+# set the window state [tiled]
+alt + f
+    bspc node -t floating
+
+# set the window state [tiled]
+alt + t
+	bspc node -t tiled
+
+# focus the node in the given direction
+alt + {h,j,k,l}
+    bspc node -f {west,south,north,east}
+
+# shift the node in the given direction
+alt + shift + {h,j,k,l}
+    bspc node -s {west,south,north,east}
+
+# focus the last node
+alt + Tab
+    bspc node -f last
+
+# focus the last desktop
+alt + comma
+    bspc desktop -f last
+
+# focus the given desktop
+alt + {1-9,0}
+    bspc desktop -f '^{1-9,10}'
+
+# send to the given desktop
+alt + shift + {1-9,0}
+    bspc node -d '^{1-9,10}'
+
+alt + g
+    bspc config window_gap 15
+
+alt + shift + g
+    bspc config window_gap 0
+
+# global expand/contract macro (with only ctrl key) [tiling]
+alt + ctrl + l
+	bspc node -z right 20 0; bspc node -z left 20 0 
+alt + ctrl + h
+	bspc node -z right -20 0; bspc node -z left -20 0 
+alt + ctrl + j
+	bspc node -z bottom 0 20; bspc node -z top 0 20 
+alt + ctrl + k
+	bspc node -z bottom 0 -20; bspc node -z top 0 -20 
+
+# global expand/contract macro (with only ctrl key) [floating]
+alt + ctrl + shift + l
+	bspc node -z right 20 0; bspc node -z left -20 0 
+alt + ctrl + shift + h
+	bspc node -z right -20 0; bspc node -z left 20 0 
+alt + ctrl + shift + j
+	bspc node -z bottom 0 -20; bspc node -z top 0 20 
+alt + ctrl + shift + k
+	bspc node -z bottom 0 20; bspc node -z top 0 -20 

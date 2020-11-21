@@ -2,5 +2,5 @@
 
 ./install
 
-stow home -t $HOME
-stow config -t $HOME
+stow HOME -t $HOME
+stow CONFIG -t $HOME

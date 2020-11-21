@@ -1,0 +1,97 @@
+! fonts
+ URxvt.font: xft:Terminus:pixelsize=24:style=bold:antialias=true:autohint=true
+! URxvt.font: xft:Fira Code:size=15:style=Regular:antialias=true:autohint=true
+! URxvt.font: xft:Jetbrains Mono:size=14:style=Regular:antialias=true:autohint=true
+
+! rendering
+Xft.dpi: 96
+Xft.antialias: true
+Xft.rgba: rgb
+Xft.hinting: true
+Xft.hintstyle: hintslight
+Xft.autohint: false
+Xft.lcdfilter: lcddefault
+
+URxvt.internalBorder: 15
+URxvt.iso14755: false
+URxvt.iso14755_52: false
+
+! colors
+#include "./colors/rterminus"
+URxvt.cursorColor: #888
+! URxvt.cursorUnderline: true
+
+! scrollbar
+URxvt.scrollBar: false
+URxvt.scrollBar_right: false
+URxvt.scrollBar_floating: false
+URxvt.scrollstyle: rxvt
+
+! others
+URxvt.intensityStyles: false
+! URxvt.letterSpace: -1
+
+! rxvt-unicode extensions
+
+! (available on void linux)
+!
+!   background
+!   bell-command
+!   bidi
+!   block-graphics-to-ascii
+!   clipboard
+!   clipboard-osc
+!   confirm-paste
+! * default
+!   eval
+!   example-refresh-hooks
+! * keyboard-select
+!   keysym-list
+!   kuake
+! * matcher
+!   option-popup
+!   overlay-osc
+!   readline
+!   remote-clipboard
+!   searchable-scrollback
+!   selection
+!   selection-autotrasform
+!   selection-pastebin
+!   selection-popup
+!   selection-to-clipboard
+!   tabbed
+! * url-select
+!   urxvt-popup
+!   xim-onthespot
+
+!   EXTERNAL PERL-EXTS
+!   resize-font
+
+URxvt.perl-ext-common: default,keyboard-select,matcher,url-select,resize-font,clipboard
+
+! keyboard-select
+URxvt.keysym.C-Escape: perl:keyboard-select:activate
+
+! matcher
+URxvt.url-launcher: firefox
+URxvt.matcher.button: 1
+URxvt.keysym.C-Delete: perl:matcher:last
+URxvt.keysym.C-S-Delete: perl:matcher:list
+URxvt.colorUL: cyan
+
+! url-select
+URxvt.keysym.C-u: perl:url-select:select_next
+URxvt.url-select.launcher: firefox
+URxvt.url-select.underline: false
+
+! resize-font
+URxvt.keysym.C-minus: resize-font:smaller
+URxvt.keysym.C-plus: resize-font:bigger
+URxvt.keysym.C-equal: resize-font:reset
+URxvt.keysym.C-question: resize-font:show
+URxvt.resize-font.step: 1
+
+! clipboard
+Urxvt.clipboard.autocopy: true
+Urxvt.keysym.M-c: perl:clipboard:copy
+Urxvt.keysym.M-v: perl:clipboard:paste

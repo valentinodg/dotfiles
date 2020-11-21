@@ -1,6 +1,11 @@
-config/.config/zsh/.zsh_history
-config/.config/zsh/.zcompdump
+CONFIG/.config/zsh/.zsh_history
+CONFIG/.config/zsh/.zcompdump
 
-config/.config/nvim/plugged
-config/.config/nvim/autoload
-config/.config/nvim/.undodir
+CONFIG/.config/nvim/plugged
+CONFIG/.config/nvim/autoload
+CONFIG/.config/nvim/.undodir
+
+CONFIG/.config/vifm/vifm-help.txt
+CONFIG/.config/vifm/vifminfo.json
+CONFIG/.config/vifm/scripts
+
