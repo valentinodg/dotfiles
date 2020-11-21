@@ -74,5 +74,5 @@ if [[ $ID = "artix" ]] || [[ $ID = "arch" ]]; then
         [[ ! -x "$(command -v $R_TOOL)" ]] && NF_TOOLS+=(${R_TOOLS[$R_TOOL]})
     done
 
-    [[ ! -z $NF_TOOLS ]] && sudo pacman -Syv ${NF_TOOLS[*]}
+    [[ ! -z $NF_TOOLS ]] && sudo pacman -Sy --noconfirm ${NF_TOOLS[*]}
 fi
