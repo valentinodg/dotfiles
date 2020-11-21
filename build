@@ -1,0 +1,6 @@
+#!/bin/bash
+
+./install
+
+stow home -t $HOME
+stow config -t $HOME
