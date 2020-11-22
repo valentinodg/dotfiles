@@ -2,6 +2,17 @@
 
 ./install
 
-stow home -t $HOME
-stow config -t $HOME
+ln -s $HOME/.config/shell/profile $HOME/.profile
+ln -s $HOME/.config/shell/profile $HOME/.zprofile
+ln -s $HOME/.config/x11/xinitrc $HOME/.xinitrc
+ln -s $HOME/.config/x11/xprofile $HOME/.xprofile
+
 stow local -t $HOME
+stow nvim -t $HOME
+stow picom -t $HOME
+stow ranger -t $HOME
+stow shell -t $HOME
+stow vifm -t $HOME
+stow x11 -t $HOME
+stow zathura -t $HOME
+stow zsh -t $HOME

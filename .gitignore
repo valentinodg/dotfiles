@@ -1,10 +1,10 @@
-config/.config/zsh/.zsh_history
-config/.config/zsh/.zcompdump
+zsh/.config/zsh/.zsh_history
+zsh/.config/zsh/.zcompdump
 
-config/.config/nvim/plugged
-config/.config/nvim/autoload
-config/.config/nvim/.undodir
+nvim/.config/nvim/plugged
+nvim/.config/nvim/autoload
+nvim/.config/nvim/.undodir
 
-config/.config/vifm/vifm-help.txt
-config/.config/vifm/vifminfo.json
-config/.config/vifm/scripts
+vifm/.config/vifm/vifm-help.txt
+vifm/.config/vifm/vifminfo.json
+vifm/.config/vifm/scripts
