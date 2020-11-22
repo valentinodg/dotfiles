@@ -1,11 +1,20 @@
 #!/bin/bash
 
-./install
+. /etc/os-release
 
-ln -s $HOME/.config/shell/profile $HOME/.profile
-ln -s $HOME/.config/shell/profile $HOME/.zprofile
-ln -s $HOME/.config/x11/xinitrc $HOME/.xinitrc
-ln -s $HOME/.config/x11/xprofile $HOME/.xprofile
+case $ID in
+    void)
+        ./void_install
+        ;;
+    artix)
+        ./artix_install
+        ;;
+esac
+
+[ ! -L $HOME/.profile ] && ln -s $HOME/.config/shell/profile $HOME/.profile
+[ ! -L $HOME/.zprofile ] && ln -s $HOME/.config/shell/profile $HOME/.zprofile
+[ ! -L $HOME/.xinitrc ] && ln -s $HOME/.config/x11/xinitrc $HOME/.xinitrc
+[ ! -L $HOME/.xprofile ] && ln -s $HOME/.config/x11/xprofile $HOME/.xprofile
 
 stow local -t $HOME
 stow nvim -t $HOME
