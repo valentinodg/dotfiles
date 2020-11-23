@@ -1,28 +1,33 @@
 #!/bin/bash
 
-. /etc/os-release
+tput setaf 6 && echo "[stow] (stow local using $HOME as target directory)"
+tput setaf 5 && stow local -t $HOME && echo "[stow] (symlink created, local)"
+tput setaf 6 && echo "[stow] (stow nvim using $HOME as target directory)"
+tput setaf 5 && stow nvim -t $HOME && echo "[stow] (symlink created, local)"
+tput setaf 6 && echo "[stow] (stow picom using $HOME as target directory)"
+tput setaf 5 && stow picom -t $HOME && echo "[stow] (symlink created, local)"
+tput setaf 6 && echo "[stow] (stow ranger using $HOME as target directory)"
+tput setaf 5 && stow ranger -t $HOME && echo "[stow] (symlink created, local)"
+tput setaf 6 && echo "[stow] (stow shell using $HOME as target directory)"
+tput setaf 5 && stow shell -t $HOME && echo "[stow] (symlink created, local)"
+tput setaf 6 && echo "[stow] (stow vifm using $HOME as target directory)"
+tput setaf 5 && stow vifm -t $HOME && echo "[stow] (symlink created, local)"
+tput setaf 6 && echo "[stow] (stow x11 using $HOME as target directory)"
+tput setaf 5 && stow x11 -t $HOME && echo "[stow] (symlink created, local)"
+tput setaf 6 && echo "[stow] (stow zathura using $HOME as target directory)"
+tput setaf 5 && stow zathura -t $HOME && echo "[stow] (symlink created, local)"
+tput setaf 6 && echo "[stow] (stow zsh using $HOME as target directory)"
+tput setaf 5 && stow zsh -t $HOME && echo "[stow] (symlink created, local)"
 
-case $ID in
-    void)
-        ./void_install
-        ;;
-    artix)
-        ./artix_install
-        ;;
-esac
-
-stow local -t $HOME
-stow nvim -t $HOME
-stow picom -t $HOME
-stow ranger -t $HOME
-stow shell -t $HOME
-stow vifm -t $HOME
-stow x11 -t $HOME
-stow zathura -t $HOME
-stow zsh -t $HOME
-
+tput setaf 6 && echo "[ln] (create symlink, profile)"
 [ ! -L $HOME/.profile ] && ln -s $HOME/.config/shell/profile $HOME/.profile
+tput setaf 5 echo "[ln] (symlink created, $HOME/.profile -> $HOME/.config/shell/profile)"
+tput setaf 6 && echo "[ln] (create symlink, zprofile)"
 [ ! -L $HOME/.zprofile ] && ln -s $HOME/.config/shell/profile $HOME/.zprofile
+tput setaf 5 echo "[ln] (symlink created, $HOME/.zprofile -> $HOME/.config/shell/profile)"
+tput setaf 6 && echo "[ln] (create symlink, xinitrc)"
 [ ! -L $HOME/.xinitrc ] && ln -s $HOME/.config/x11/xinitrc $HOME/.xinitrc
+tput setaf 5 echo "[ln] (symlink created, $HOME/.xinitrc -> $HOME/.config/x11/xinitrc)"
+tput setaf 6 && echo "[ln] (create symlink, xprofile)"
 [ ! -L $HOME/.xprofile ] && ln -s $HOME/.config/x11/xprofile $HOME/.xprofile
-
+tput setaf 5 echo "[ln] (symlink created, $HOME/.xprofile -> $HOME/.config/x11/xprofile)"
