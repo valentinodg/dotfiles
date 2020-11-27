@@ -39,8 +39,6 @@ if [[ $ID = "artix" ]]; then
     [ -x "$(command -v fd)" ] && alias fd='fd -H -c always'
 fi
 
-# alias m='glances'
-
 alias shd='sudo shutdown -P now'
 alias rbt='sudo shutdown -r now'
 alias q='cd ..'
@@ -54,7 +52,3 @@ alias wget="wget --no-hsts"
 alias ls="ls -hN --color=auto --group-directories-first"
 alias grep="grep --color=auto"
 alias diff="diff --color=auto"
-
-# alias f='lsd -A --icon never'
-# alias v='lsd -lA --group-dirs first --icon never'
-# alias i4="ip -oneline -4 addr show INTERFACE|awk '{print \$4}'|cut -d/ -f1"
