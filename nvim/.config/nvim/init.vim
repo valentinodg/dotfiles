@@ -29,6 +29,7 @@ Plug 'kien/rainbow_parentheses.vim'
 Plug 'vifm/vifm.vim'
 Plug 'itchyny/lightline.vim'
 Plug 'airblade/vim-gitgutter'
+" Plug 'lervag/vimtex'
 " Plug 'yggdroot/indentline'
 " Plug 'tpope/vim-commentary'
 " Plug 'franbach/miramare'
@@ -37,6 +38,8 @@ Plug 'airblade/vim-gitgutter'
 Plug 'tikhomirov/vim-glsl'
 Plug 'rust-lang/rust.vim'
 call plug#end()
+
+let g:vimtex_view_general_viewer='zathura'
 
 filetype plugin indent on
 syntax enable " on
