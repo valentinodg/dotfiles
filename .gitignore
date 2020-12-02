@@ -8,3 +8,6 @@ nvim/.config/nvim/.undodir
 vifm/.config/vifm/vifm-help.txt
 vifm/.config/vifm/vifminfo.json
 vifm/.config/vifm/scripts
+
+local/.local/bin
+!local/.local/bin/obj

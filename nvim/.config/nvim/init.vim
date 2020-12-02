@@ -29,7 +29,6 @@ Plug 'kien/rainbow_parentheses.vim'
 Plug 'vifm/vifm.vim'
 Plug 'itchyny/lightline.vim'
 Plug 'airblade/vim-gitgutter'
-" Plug 'lervag/vimtex'
 " Plug 'yggdroot/indentline'
 " Plug 'tpope/vim-commentary'
 " Plug 'franbach/miramare'
@@ -37,6 +36,7 @@ Plug 'airblade/vim-gitgutter'
 " Plug 'majutsushi/tagbar'
 Plug 'tikhomirov/vim-glsl'
 Plug 'rust-lang/rust.vim'
+" Plug 'lervag/vimtex'
 call plug#end()
 
 let g:vimtex_view_general_viewer='zathura'
@@ -148,8 +148,9 @@ nmap <leader>\ :source %<cr>
 " split
 map <c-l> :winc l<cr>
 map <c-h> :winc h<cr>
-" map <c-j> :winc j<cr>
-" map <c-k> :winc k<cr>
+map <c-j> :winc j<cr>
+map <c-k> :winc k<cr>
+map <F11> :VimtexCompile<cr>
 " tab
 map <leader>tl :tabprevious<cr>
 map <leader>th :tabnext<cr>
