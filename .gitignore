@@ -1,5 +1,6 @@
 zsh/.config/zsh/.zsh_history
 zsh/.config/zsh/.zcompdump
+zsh/.config/zsh/cache
 
 nvim/.config/nvim/plugged
 nvim/.config/nvim/autoload
