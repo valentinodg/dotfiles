@@ -21,6 +21,7 @@ if [[ $ID = "void" ]]; then
         alias v='exa -lahg -s type' \
         alias t='exa -aT'
     [ -x "$(command -v fd)" ] && alias fd='fd -H -c always'
+    [ -x "$(command -v neomutt)" ] && alias m='neomutt'
 fi
 
 # ARTIX
@@ -37,6 +38,7 @@ if [[ $ID = "artix" ]]; then
         alias v='exa -lahg -s type' \
         alias t='exa -aT'
     [ -x "$(command -v fd)" ] && alias fd='fd -H -c always'
+    [ -x "$(command -v neomutt)" ] && alias m='neomutt'
 fi
 
 alias shd='sudo shutdown -P now'

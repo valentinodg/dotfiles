@@ -12,3 +12,4 @@ vifm/.config/vifm/scripts
 
 local/.local/bin
 !local/.local/bin/obj
+local/.local/share
