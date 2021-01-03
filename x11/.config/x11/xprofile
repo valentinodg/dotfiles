@@ -5,5 +5,6 @@
 
 setxkbmap it &
 xset r rate 200 50 &
-picom &
-# feh --no-fehbg --randomize --bg-scale $HOME/wallpapers &
+picom -b &
+dwms &
+# feh --no-fehbg --randomize --bg-scale $HOME/wall &
