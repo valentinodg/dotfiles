@@ -43,6 +43,7 @@ fi
 
 alias shd='sudo shutdown -P now'
 alias rbt='sudo shutdown -r now'
+alias a='(&>/dev/null st -e zsh -c "cd $PWD; exec zsh" &)'
 alias q='cd ..'
 alias s="fzfed"
 alias c="ranger-cd"
