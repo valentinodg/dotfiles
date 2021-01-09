@@ -1,0 +1,268 @@
+#!/bin/sh
+
+password_prefix="nmw-"
+email_regex=".+@.+\..+"
+mbsyncrc="${MBSYNCRC:-$HOME/.mbsyncrc}"
+mutt_dir="${XDG_CONFIG_HOME:-$HOME/.config}/mutt"
+accounts_dir="$mutt_dir/accounts"
+msmtp_log="${XDG_CONFIG_HOME:-$HOME/.config}/msmtp/msmtp.log"
+mail_dir="${XDG_DATA_HOME:-$HOME/.local/share}/mail"
+cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/neomutt-wiz"
+msmtprc="${XDG_CONFIG_HOME:-$HOME/.config}/msmtp/config"
+mbsyncrc="${MBSYNCRC:-$HOME/.mbsyncrc}"
+
+alias mbsync='mbsync -c "$mbsyncrc"'
+
+message() {
+    tput setaf 6
+    echo $1
+    tput sgr0
+}
+
+. /etc/os-release
+case $ID in
+    void)
+        pm_install="sudo xbps-install -Sy"
+        ;;
+esac
+
+check_cert() {
+        for x in "/etc/ssl/certs/ca-certificates.crt" \
+        "/etc/pki/tls/certs/ca-bundle.crt" \
+        "/etc/ssl/ca-bundle.pem" \
+        "/etc/pki/tls/cacert.pem" \
+        "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem" \
+        "/etc/ssl/cert.pem" \
+        "/usr/local/share/ca-certificates/"; do
+        [ -f $x ] && sslcert=$x && break
+    done || {
+        echo "ca certificates not found"
+        echo "please install one or link it to /etc/ssl/certs/ca-certificates.crt"
+        exit 1
+    }
+}
+
+check_dep() {
+    command -V neomutt >/dev/null 2>&1 || $pm_install neomutt
+    command -V gpg2 >/dev/null 2>&1 || $pm_install gnupg2
+    command -V pass >/dev/null 2>&1 || $pm_install pass
+    command -V mbsync >/dev/null 2>&1 || $pm_install isync
+    command -V msmtp >/dev/null 2>&1 || $pm_install msmtp
+    PASSWORD_STORE_DIR="${PASSWORD_STORE_DIR:-$HOME/.password-store}"
+    [ -r $PASSWORD_STORE_DIR/.gpg-id ] && \
+        gpg2 --list-secret-keys $(cat $PASSWORD_STORE_DIR/.gpg-id) >/dev/null 2>&1 || {
+            echo "RUN: gpg2 --full-gen-key (to set up a password archive)"
+            echo "RUN: pass init <gpg_mail> (if you don't already have a gpg key pair)"
+            exit 1
+        }
+}
+
+get_accounts() {
+    accounts=$(find -L $account_dir -type f | \
+        grep -o "[0-9]-.*.muttrc" | \
+        sed "s/-/: /;s/\.muttrc$//" | \
+        sort -n)
+}
+
+list() {
+    get_accounts && [ -n $accounts ] && echo $accounts
+}
+
+ask_info() {
+    [ -z $full_addr ] && \
+        message "[EMAIL ADDRESS] full email address to add" && \
+        read -r full_addr
+    while ! echo $full_addr | grep -qE $email_regex; do
+        echo "$full_addr is not a valid email address"
+        message "[EMAIL ADDRESS] please re-type the address"
+        read -r full_addr
+    done
+    grep -q "channel\s*$full_addr" "$mbsyncrc" && {
+        echo "$full_addr has already been added"
+        exit 1
+    }
+    [ -z "$imap" ] && message "[IMAP ADDRESS] email server's IMAP address [excluding the port number]" && \
+        read -r imap
+    [ -z "$iport" ] && message "[IMAP PORT] email server's SMTP port number" && \
+        read -r iport
+    [ -z "$smtp" ] && message "[SMTP ADDRESS] email server's SMTP address number [excluding the port number]" && \
+        read -r smtp
+    [ -z "$sport" ] && message "[SMTP PORT] email server's SMTP port number" && \
+        read -r sport
+    [ "$sport" = 465 ] && tlsline="tls_starttls off"
+    [ -z "$real_name" ] && real_name="${full_addr%%@*}"
+    login="${login:-$full_addr}"
+    echo $login
+    echo $sport
+    if [ -n "${password+x}" ]; then
+        create_password
+    else
+        get_password
+    fi
+}
+
+create_password() {
+    echo $password > $PASSWORD_STORE_DIR/$password_prefix$full_addr
+    gpg2 -qer $(cat $PASSWORD_STORE_DIR/.gpg-id) $PASSWORD_STORE_DIR/$password_prefix$full_addr
+    rm -f $PASSWORD_STORE_DIR/$password_prefix$full_addr
+}
+
+get_password() {
+    while : ; do
+        message "[PASSWORD] type password"
+        pass rm -f $password_prefix$full_addr >/dev/null 2>&1
+        pass insert $password_prefix$full_addr && break
+    done
+}
+
+getprofiles() {
+    unset msmtp_header msmtp_profile mutt_profile mbsync_profile
+
+    case "$iport" in
+            1143) imap_ssl=None ;;
+            143) imap_ssl=STARTTLS ;;
+    esac
+
+msmtp_header="defaults
+authon
+tlson
+tls_trust_file$ssl_cert
+logfile $msmtp_log
+"
+
+msmtp_profile="account $full_addr
+host $smtp
+port ${sport:-587}
+from $full_addr
+user $login
+passwordeval \"pass $password_prefix$full_addr\"
+$tls_line
+"
+
+mbsync_profile="IMAPStore $full_addr-remote
+Host $imap
+Port ${iport:-993}
+User $login
+PassCmd \"pass $password_prefix$full_addr\"
+AuthMechs LOGIN
+SSLType ${imap_ssl:-IMAPS}
+CertificateFile $ssl_cert
+MaildirStore $full_addr-local
+Subfolders Verbatim
+Path ${XDG_DATA_HOME:-$HOME/.local/share}/mail/$full_addr/
+Inbox ${XDG_DATA_HOME:-$HOME/.local/share}/mail/$full_addr/INBOX
+Flatten .
+Channel $full_addr
+Expunge Both
+Master :$full_addr-remote:
+Slave :$full_addr-local:
+Patterns * !\"[Gmail]/All Mail\"
+Create Both
+SyncState *
+MaxMessages ${max_mes:-0}
+ExpireUnread no
+# end profile
+"
+
+if [ -z "${online+x}" ]; then
+mutt_profile="# vim: filetype=neomuttrc
+# muttrc file for account $full_addr
+set realname = \"$real_name\"
+set from = \"$full_addr\"
+set sendmail = \"msmtp -a $full_addr\"
+alias me $real_name <$full_addr>
+set folder = \"$mail_dir/$full_addr\"
+set header_cache = $cache_dir/$full_addr/headers
+set message_cachedir = $cache_dir/$full_addr/bodies
+set mbox_type = Maildir
+bind index,pager gg noop
+bind index,pager g noop
+bind index,pager M noop
+bind index,pager C noop
+bind index gg first-entry
+macro index o \"<shell-escape>mw -y $full_addr<enter>\" \"run mbsync to sync $full_addr\"
+unmailboxes *
+unalternates *
+"
+else
+mutt_profile="# vim: filetype=neomuttrc
+# muttrc file for account $full_addr
+set realname = \"$real_name\"
+set from = \"$full_addr\"
+set sendmail = \"msmtp -a $full_addr\"
+alias me $real_name <$full_addr>
+set folder = \"imaps://$login@$imap:${iport:-993}\"
+set imap_user = \"$login\"
+set header_cache = $cache_dir/$full_addr/headers
+set message_cachedir = $cache_dir/$full_addr/bodies
+set imap_pass = \"\`pass $password_prefix$full_addr\`\"
+set mbox_type = Maildir
+set ssl_starttls = yes
+set ssl_force_tls = yes
+bind index,pager gg noop
+bind index,pager g noop
+bind index,pager M noop
+bind index,pager C noop
+bind index gg first-entry
+unmailboxes *
+"
+fi
+}
+
+write_info() {
+    mkdir -p $cache_dir/$full_addr/bodies
+    mkdir -p ${XDG_CONFIG_HOME:-$HOME/.config}/msmtp
+    mkdir -p $mail_dir/$full_addr
+
+    # get accounts and find the first missing account number (max 9)
+    get_accounts
+    for x in $(sed 1 9); do
+        echo $accounts | grep -q $x || {
+            export id_num=$x
+            break
+        }
+    done
+
+    # configure msmtprc for sending mail
+    [ ! -f $msmtprc ] && echo $msmtp_header >  $msmtprc
+    echo $msmtp_profile >> $msmtprc
+
+    # create mbsync config file if local account
+    [ -z "${online+x}" ] && mkdir -p "${mbsyncrc%/*}" && echo "$mbsync_profile" >> "$mbsyncrc"
+
+    # create muttrc for viewing mail
+    # TODO
+    echo $mutt_profile > $accounts_dir/$id_num-$full_addr.muttrc
+    [ ! -f "$muttrc" ] && echo "# vim: filetype=neomuttrc" > "$muttrc"
+    ! grep -q "^source.*mutt-wizard.muttrc" "$muttrc" && echo "source $mwconfig $marker" >> "$muttrc"
+    ! grep "^source.*.muttrc" "$muttrc" | grep -qv "$mwconfig" && echo "source $accdir/$idnum-$fulladdr.muttrc $marker" >> "$muttrc"
+    echo "macro index,pager i$idnum '<sync-mailbox><enter-command>source $accdir/$idnum-$fulladdr.muttrc<enter><change-folder>!<enter>;<check-stats>' \"switch to $fulladdr\" $marker" >> "$muttrc"
+
+    notmuchauto # Create a notmuch config file if not present already.
+}
+
+nmw_info() { cat << EOF
+neomutt-wiz
+
+    add             add email address
+    list            list configured email addresses
+    remove          remove configured email addresses
+
+    help            display this info text
+
+change account's password: \`pass edit ${password_prefix}your@email.com\`.
+EOF
+}
+
+case $1 in
+    list) list ;;
+    add) check_dep && ask_info && get_profiles && write_info ;;
+    help)
+        nmw_info
+        exit 1
+        ;;
+    *)
+        nmw_info
+        exit 1
+        ;;
+esac
