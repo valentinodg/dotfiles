@@ -40,9 +40,6 @@ promptinit
 autoload -Uz colors 
 colors
 
-# PROMPT='$(git_super_status)$FG[203][$FG[215]%n$FG[150]@$FG[074]%m $FG[212]%~$FG[203]] $FG[229]% %# %{$reset_color%} '
-# PROMPT='%F{14}[%n@%m %~]% %# % %f'
-# PROMPT='%F{2}%n:%m %~ % %# % %f'
 PROMPT='%F{226}[%n:%m:%~]> %f'
 
 # zle key bindings (create a zkbd compatible hash)
@@ -132,7 +129,7 @@ bindkey -M menuselect 'j' vi-down-line-or-history
 bindkey -v '^?' backward-delete-char
 
 # enable reverse search
-# bindkey '^B' history-incremental-search-backward
+bindkey '^N' history-incremental-search-backward
 
 # autopushd
 DIRSTACKSIZE=10

@@ -12,4 +12,5 @@ vifm/.config/vifm/scripts
 
 local/.local/bin/*
 !local/.local/bin/dwms
+!local/.local/bin/nmwiz
 local/.local/share

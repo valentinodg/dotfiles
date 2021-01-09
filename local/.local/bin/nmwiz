@@ -4,12 +4,15 @@ password_prefix="nmw-"
 email_regex=".+@.+\..+"
 mbsyncrc="${MBSYNCRC:-$HOME/.mbsyncrc}"
 mutt_dir="${XDG_CONFIG_HOME:-$HOME/.config}/mutt"
+muttrc="$mutt_dir/muttrc"
 accounts_dir="$mutt_dir/accounts"
 msmtp_log="${XDG_CONFIG_HOME:-$HOME/.config}/msmtp/msmtp.log"
 mail_dir="${XDG_DATA_HOME:-$HOME/.local/share}/mail"
 cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/neomutt-wiz"
 msmtprc="${XDG_CONFIG_HOME:-$HOME/.config}/msmtp/config"
 mbsyncrc="${MBSYNCRC:-$HOME/.mbsyncrc}"
+nmw_config="$mutt_dir/nmwiz_default.muttrc"
+marker="# nmwwiz-autogen"
 
 alias mbsync='mbsync -c "$mbsyncrc"'
 
@@ -115,7 +118,7 @@ get_password() {
     done
 }
 
-getprofiles() {
+get_profiles() {
     unset msmtp_header msmtp_profile mutt_profile mbsync_profile
 
     case "$iport" in
@@ -216,7 +219,7 @@ write_info() {
 
     # get accounts and find the first missing account number (max 9)
     get_accounts
-    for x in $(sed 1 9); do
+    for x in $(seq 1 9); do
         echo $accounts | grep -q $x || {
             export id_num=$x
             break
@@ -231,32 +234,101 @@ write_info() {
     [ -z "${online+x}" ] && mkdir -p "${mbsyncrc%/*}" && echo "$mbsync_profile" >> "$mbsyncrc"
 
     # create muttrc for viewing mail
-    # TODO
     echo $mutt_profile > $accounts_dir/$id_num-$full_addr.muttrc
     [ ! -f "$muttrc" ] && echo "# vim: filetype=neomuttrc" > "$muttrc"
-    ! grep -q "^source.*mutt-wizard.muttrc" "$muttrc" && echo "source $mwconfig $marker" >> "$muttrc"
-    ! grep "^source.*.muttrc" "$muttrc" | grep -qv "$mwconfig" && echo "source $accdir/$idnum-$fulladdr.muttrc $marker" >> "$muttrc"
-    echo "macro index,pager i$idnum '<sync-mailbox><enter-command>source $accdir/$idnum-$fulladdr.muttrc<enter><change-folder>!<enter>;<check-stats>' \"switch to $fulladdr\" $marker" >> "$muttrc"
+    ! grep -q "^source.*nmwiz-default.muttrc" "$muttrc" && echo "source $nmw_config $marker" >> "$muttrc"
+    ! grep "^source.*.muttrc" "$muttrc" | grep -qv "$nmw_config" && echo "source $accounts_dir/$id_num-$full_addr.muttrc $marker" >> "$muttrc"
+    echo "macro index,pager i$id_num '<sync-mailbox><enter-command>source $accounts_dir/$id_num-$full_addr.muttrc<enter><change-folder>!<enter>;<check-stats>' \"switch to $full_addr\" $marker" >> "$muttrc"
 
-    notmuchauto # Create a notmuch config file if not present already.
+    # Create a notmuch config file if not present already.
+    notmuchauto
+}
+
+notmuchauto() { \
+	[ -z "$NOTMUCH_CONFIG" ] && NOTMUCH_CONFIG="$HOME/.notmuch-config"
+	[ -f "$NOTMUCH_CONFIG" ] && return 0
+notmuch_basic="[database]
+path=$mail_dir
+[user]
+name=$real_name
+primary_email=$full_addr
+[new]
+tags=unread;inbox;
+ignore=.mbsyncstate;.uidvalidity
+[search]
+exclude_tags=deleted;spam;
+[maildir]
+synchronize_flags=true
+[crypto]
+gpg_path=gpg2"
+	echo "$notmuch_basic" > "$NOTMUCH_CONFIG"
+}
+
+get_boxes() { [ -n "${force+x}" ] && mailboxes="INBOX
+Drafts
+Junk
+Trash
+Sent
+Archive" && return 0
+	info="$(curl --location-trusted -s -m 5 --user "$login:$(pass $password_prefix$full_addr)" --url "${protocol:-imaps}://$imap")"
+	[ -z "$info" ] && echo "Log-on not successful." && return 1
+	mailboxes="$(echo "$info" | sed "s/.*\" //;s/\"//g" | tr -d '^M')"
+}
+
+formatShortcut() {
+    toappend="$toappend
+    macro index,pager g$1 \"<change-folder>=$3<enter>\" \"go to $2\" $marker
+    macro index,pager M$1 \";<save-message>=$3<enter>\" \"move mail to $2\" $marker
+    macro index,pager C$1 \";<copy-message>=$3<enter>\" \"copy mail to $2\" $marker" >> "$accounts_dir/$id_num-$full_addr.muttrc"
+}
+
+setBox() {
+    toappend="$toappend
+    set $1 = \"+$2\" $marker"
+}
+
+finalize() { 
+    echo "$mailboxes" | xargs -I {} mkdir -p "$mail_dir/$full_addr/{}/cur" "$mail_dir/$full_addr/{}/tmp" "$mail_dir/$full_addr/{}/new"
+	sed -ibu "/$marker/d" "$accounts_dir/$id_num-$full_addr.muttrc" ; rm -f "$accounts_dir/$id_num-$full_addr.muttrcbu"
+	toappend="mailboxes $(echo "$mailboxes" | sed "s/^/\"=/;s/$/\"/" | paste -sd ' ' - )"
+	for x in $mailboxes; do
+		case "$x" in
+			*[Ss][Ee][Nn][Tt]*) setBox record "$x"; formatShortcut s sent "$x" ;;
+			*[Dd][Rr][Aa][Ff][Tt][Ss]*) setBox postponed "$x"; formatShortcut d drafts "$x" ;;
+			*[Tt][Rr][Aa][Ss][Hh]*) formatShortcut t trash "$x"; setBox trash "$x" ;;
+			*[Jj][Uu][Nn][Kk]*) formatShortcut j junk "$x" ;;
+			*[Aa][Rr][Cc][Hh][Ii][Vv][Ee]*) formatShortcut a archive "$x" ;;
+			*[Ss][Pp][Aa][Mm]*) formatShortcut S spam "$x" ;;
+			*[Ii][Nn][Bb][Oo][Xx]*) formatShortcut i inbox "$x"; setBox spoolfile "$x" ;;
+		esac
+	done
+	echo "$toappend" >> "$accounts_dir/$id_num-$full_addr.muttrc"
+	[ -z "${online+x}" ] && echo "$full_addr (account #$id_num) added successfully."
+	command -V urlview >/dev/null 2>&1 && [ ! -f "$HOME/.urlview" ] && echo "COMMAND \$BROWSER" > "$HOME/.urlview"
+	return 0 ;
 }
 
 nmw_info() { cat << EOF
-neomutt-wiz
 
-    add             add email address
-    list            list configured email addresses
-    remove          remove configured email addresses
+########## NMWIZ ##########
 
-    help            display this info text
+USAGE:
+nmwiz [SUBCOMMANDS]
 
-change account's password: \`pass edit ${password_prefix}your@email.com\`.
+SUBCOMMANDS:
+add             - add email address
+list            - list configured email addresses
+remove          - remove configured email addresses
+help            - display this info text
+
+(change account's password: \`pass edit ${password_prefix}your@email.com\`)
+
 EOF
 }
 
 case $1 in
     list) list ;;
-    add) check_dep && ask_info && get_profiles && write_info ;;
+    add) check_dep && ask_info && get_profiles && write_info && get_boxes && finalize ;;
     help)
         nmw_info
         exit 1
