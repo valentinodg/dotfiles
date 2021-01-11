@@ -1,33 +1,12 @@
 #!/bin/bash
 
-PASSWORD_PREFIX="nmwiz-"
-EMAIL_REGEX=".+@.+\..+"
-
-MUTT_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/mutt"
-ACC_DIR="$MUTT_DIR/acc"
-MAIL_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/mail"
-CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/nmwiz"
-PASSWORD_STORE_DIR="${PASSWORD_STORE_DIR:-$HOME/.password-store}"
-
-MUTTRC_LOC="$MUTT_DIR/muttrc"
-MSMTPRC_LOC="${XDG_CONFIG_HOME:-$HOME/.config}/msmtp/config"
-MBSYNCRC_LOC="${MBSYNCRC_LOC:-$HOME/.config/mbsync/.mbsyncrc}"
-
-MSMTP_LOG_LOC="${XDG_CONFIG_HOME:-$HOME/.config}/msmtp/msmtp.log"
-NMWIZ_DEFAULT_LOC="$MUTT_DIR/nmwiz_default.muttrc"
-
-MARKER="# nmwwiz-autogen"
-
-alias mbsync='mbsync -c "$MBSYNCRC_LOC"'
-
-imessage() { tput setaf 6; echo $1; tput sgr0 ;}
-emessage() { tput setaf 1; echo $1; tput sgr0 ;}
+. nmwiz_var
 
 set_installer() {
     imessage "[ AUTOSET ] setting package manager"
     . /etc/os-release
     case $ID in
-        void) pm_install="sudo xbps-install -Sy" ;;
+        void) PM_INSTALL="sudo xbps-install -Sy" ;;
         *) imessage "[ ERROR ] distro not recognized"; exit 1 ;;
     esac
 }
@@ -51,15 +30,15 @@ check_cert() {
 
 check_dep() {
     imessage "[ AUTOCHK ] checking dependency: neomutt"
-    command -V neomutt >/dev/null 2>&1 || $pm_install neomutt
+    command -V neomutt >/dev/null 2>&1 || $PM_INSTALL neomutt
     imessage "[ AUTOCHK ] checking dependency: gpg2"
-    command -V gpg2 >/dev/null 2>&1 || $pm_install gnupg2
+    command -V gpg2 >/dev/null 2>&1 || $PM_INSTALL gnupg2
     imessage "[ AUTOCHK ] checking dependency: pass"
-    command -V pass >/dev/null 2>&1 || $pm_install pass
+    command -V pass >/dev/null 2>&1 || $PM_INSTALL pass
     imessage "[ AUTOCHK ] checking dependency: isync"
-    command -V mbsync >/dev/null 2>&1 || $pm_install isync
+    command -V mbsync >/dev/null 2>&1 || $PM_INSTALL isync
     imessage "[ AUTOCHK ] checking dependency: msmtp"
-    command -V msmtp >/dev/null 2>&1 || $pm_install msmtp
+    command -V msmtp >/dev/null 2>&1 || $PM_INSTALL msmtp
 }
 
 check_gpg() {
