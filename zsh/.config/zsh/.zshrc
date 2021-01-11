@@ -129,7 +129,7 @@ bindkey -M menuselect 'j' vi-down-line-or-history
 bindkey -v '^?' backward-delete-char
 
 # enable reverse search
-bindkey '^N' history-incremental-search-backward
+bindkey '^B' history-incremental-search-backward
 
 # autopushd
 DIRSTACKSIZE=10
