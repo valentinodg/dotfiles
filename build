@@ -14,9 +14,6 @@ function CMDTXT()
     tput sgr0
 }
 
-MSGTXT "[stow] (stow local using $HOME as target directory)"
-stow local -t $HOME && CMDTXT "[stow] (symlink created, local)"
-
 MSGTXT "[stow] (stow nvim using $HOME as target directory)"
 stow nvim -t $HOME && CMDTXT "[stow] (symlink created, local)"
 

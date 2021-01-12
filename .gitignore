@@ -9,11 +9,3 @@ nvim/.config/nvim/.undodir
 vifm/.config/vifm/vifm-help.txt
 vifm/.config/vifm/vifminfo.json
 vifm/.config/vifm/scripts
-
-local/.local/bin/*
-!local/.local/bin/dwms
-!local/.local/bin/nmwiztest
-!local/.local/bin/nmwiz_check
-!local/.local/bin/nmwiz_add
-!local/.local/bin/nmwiz_var
-local/.local/share
