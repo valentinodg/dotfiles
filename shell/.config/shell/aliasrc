@@ -24,8 +24,8 @@ if [[ $ID = "void" ]]; then
     [ -x "$(command -v neomutt)" ] && alias m='neomutt'
 fi
 
-# ARTIX
-if [[ $ID = "artix" ]]; then
+# ARCH
+if [[ $ID = "arch" ]]; then
     
     [ -x "$(command -v nvim)" ] && \
         alias n='nvim' && \
