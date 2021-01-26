@@ -1,11 +1,3 @@
-# initialize zsh-autosuggestion
-# source ~/.config/zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-# bindkey '^ ' autosuggest-accept
-
-# initialize zsh-syntax-highlighting
-# source ~/.config/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
-# history
 HISTSIZE=1000
 SAVEHIST=1000
 HISTFILE=~/.config/zsh/.zsh_history
@@ -15,17 +7,14 @@ setopt autocd
 setopt extendedglob 
 setopt nomatch 
 setopt notify
-# setopt correctall
 setopt autolist
 setopt automenu
 setopt alwaystoend
+# setopt correctall
 
 unsetopt beep
 
-# enable vim mode
 bindkey -v
-
-# use jk to trigger vi-cmd-mode
 # bindkey 'jk' vi-cmd-mode
 
 zstyle :compinstall filename '$HOME/.config/zsh/.zshrc'
@@ -35,12 +24,10 @@ compinit
 
 autoload -Uz promptinit
 promptinit
-# prompt walters
+PROMPT='%F{226}[%n:%m:%~]> %f'
 
 autoload -Uz colors 
 colors
-
-PROMPT='%F{226}[%n:%m:%~]> %f'
 
 # zle key bindings (create a zkbd compatible hash)
 typeset -g -A key
@@ -101,7 +88,6 @@ key[Control-Right]="${terminfo[kRIT5]}"
 
 # automatic ls after autocd
 autoload -U add-zsh-hook
-# add-zsh-hook -Uz chpwd(){ lsd -A --icon never --group-dirs first }
 add-zsh-hook -Uz chpwd(){ exa -as type }
 
 # auto-completion with keyboard
@@ -109,7 +95,7 @@ zstyle ':completion:*' menu select
 zmodload zsh/complist
 _comp_options+=(globdots)
 
-# enable auto-completion in privileged commands (ex. sudo)
+# enable auto-completion in privileged commands
 zstyle ':completion::complete:*' gain-privileges 1
 
 # case insensitive completion
@@ -146,38 +132,8 @@ setopt histfindnodups
 setopt incappendhistory
 setopt sharehistory
 
-# use lf to switch directories and bind it to ctrl-o
-# lfcd () {
-#   tmp="$(mktemp)"
-#   lf -last-dir-path="$tmp" "$@"
-#   if [ -f "$tmp" ]; then
-#     dir="$(cat "$tmp")"
-#     rm -f "$tmp"
-#     [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
-#   fi
-# }
-# bindkey -s '^o' 'lfcd\n'
-
-# use ranger to switch directories and bind it to ctrl-o
-rangercd() {
-  tempfile="$(mktemp -t tmp.XXXXXX)"
-  ranger --choosedir="$tempfile" "${@:-$(pwd)}"
-  test -f "$tempfile" &&
-    if [ "$(cat -- "$tempfile")" != "$(echo -n `pwd`)" ]; then
-      cd -- "$(cat "$tempfile")"
-    fi  
-    rm -f -- "$tempfile"
-  }
-# bindkey -s '^O' 'ranger-cd\n'
-
-# use fzf to find/mod files
-fzfed() { 
-  du -aL ~/.config ~/ws ~/.local/bin | 
-  awk '{print $2}' | 
-  fzf --layout=reverse --height 20% | 
-  xargs -or $EDITOR ;
-}
-# bindkey -s '^p' 'fzfed\n'
+# load custom function file
+[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/shell/cfuncs" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/shell/cfuncs"
 
 # save dirstacksize last visited folder
 autoload -Uz add-zsh-hook

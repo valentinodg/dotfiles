@@ -1,0 +1,33 @@
+# use lf to switch directories and bind it to ctrl-o
+# lfcd () {
+#   tmp="$(mktemp)"
+#   lf -last-dir-path="$tmp" "$@"
+#   if [ -f "$tmp" ]; then
+#     dir="$(cat "$tmp")"
+#     rm -f "$tmp"
+#     [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
+#   fi
+# }
+# bindkey -s '^o' 'lfcd\n'
+
+# use ranger to switch directories and bind it to ctrl-o
+rangercd() {
+  tempfile="$(mktemp -t tmp.XXXXXX)"
+  ranger --choosedir="$tempfile" "${@:-$(pwd)}"
+  test -f "$tempfile" &&
+    if [ "$(cat -- "$tempfile")" != "$(echo -n `pwd`)" ]; then
+      cd -- "$(cat "$tempfile")"
+    fi  
+    rm -f -- "$tempfile"
+  }
+# bindkey -s '^O' 'ranger-cd\n'
+
+# use fzf to find and edit files
+fzfed() { 
+  du -aL ~/.config ~/ws ~/.local/bin | 
+  awk '{print $2}' | 
+  fzf --layout=reverse --height 20% | 
+  xargs -or $EDITOR ;
+}
+# bindkey -s '^p' 'fzfed\n'
+
