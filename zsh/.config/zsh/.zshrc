@@ -26,7 +26,7 @@ unsetopt beep
 bindkey -v
 
 # use jk to trigger vi-cmd-mode
-bindkey 'jk' vi-cmd-mode
+# bindkey 'jk' vi-cmd-mode
 
 zstyle :compinstall filename '$HOME/.config/zsh/.zshrc'
 
@@ -159,7 +159,7 @@ setopt sharehistory
 # bindkey -s '^o' 'lfcd\n'
 
 # use ranger to switch directories and bind it to ctrl-o
-function ranger-cd {
+rangercd() {
   tempfile="$(mktemp -t tmp.XXXXXX)"
   ranger --choosedir="$tempfile" "${@:-$(pwd)}"
   test -f "$tempfile" &&
@@ -168,17 +168,16 @@ function ranger-cd {
     fi  
     rm -f -- "$tempfile"
   }
-
-bindkey -s '^O' 'ranger-cd\n'
+# bindkey -s '^O' 'ranger-cd\n'
 
 # use fzf to find/mod files
 fzfed() { 
-  du -aL ~/.config ~/code ~/.local/bin | 
+  du -aL ~/.config ~/ws ~/.local/bin | 
   awk '{print $2}' | 
   fzf --layout=reverse --height 20% | 
   xargs -or $EDITOR ;
 }
-bindkey -s '^p' 'fzfed\n'
+# bindkey -s '^p' 'fzfed\n'
 
 # save dirstacksize last visited folder
 autoload -Uz add-zsh-hook

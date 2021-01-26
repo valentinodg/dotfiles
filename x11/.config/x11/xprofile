@@ -3,7 +3,7 @@
 # vmware-user-suid-wrapper &
 # xrdb ${XDG_CONFIG_HOME:-$HOME/.config}/x11/xresources &
 
-setxkbmap it &
+setxkbmap us &
 xset r rate 200 50 &
 picom -b &
 dwms &

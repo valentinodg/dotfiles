@@ -40,6 +40,8 @@ Plug 'rust-lang/rust.vim'
 call plug#end()
 
 let g:vimtex_view_general_viewer='zathura'
+let g:python3_host_prog = '/bin/python3'
+let g:coc_global_extensions = ['coc-clangd', 'coc-texlab']
 
 filetype plugin indent on
 syntax enable " on
@@ -137,7 +139,7 @@ let g:gruvbox_italic=1
 let g:gruvbox_contrast_dark='hard'
 colorscheme gruvbox
 
-imap jk <esc>
+" imap jk <esc>
 nmap <F3> /
 nmap <leader>w :w<cr>
 nmap <leader>q :q<cr>
