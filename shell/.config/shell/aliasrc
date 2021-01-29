@@ -9,6 +9,10 @@ if [[ $ID = "void" ]]; then
     alias gu="xh up; xh cl; xh ar; vkl; vkr;"
     alias vkl="sudo vkpurge list"
     alias vkr="sudo vkpurge rm all"
+    alias rh="sudo vsv"
+    alias xi="xbps-query -Rs ''|cut -d' ' -f1-2|fzf -m --preview 'xbps-query -R {2}'|cut -d' ' -f2|xargs -ro sudo xbps-install -Sy"
+    alias xp="xbps-query -Rs ''|cut -d' ' -f1-2|fzf -m --preview 'xbps-query -R {2}'|cut -d' ' -f2|xargs -ro sudo xbps-remove"
+    alias xpp="xbps-query -Rs ''|cut -d' ' -f1-2|fzf -m --preview 'xbps-query -R {2}'|cut -d' ' -f2|xargs -ro sudo xbps-remove -R"
     
     [ -x "$(command -v nvim)" ] && \
         alias n='nvim' && \

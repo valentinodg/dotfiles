@@ -42,7 +42,7 @@ call plug#end()
 let g:vimtex_view_general_viewer='zathura'
 let g:python3_host_prog = '/bin/python3'
 let g:python_host_prog = '/bin/python2'
-let g:coc_global_extensions = ['coc-clangd', 'coc-texlab']
+let g:coc_global_extensions = ['coc-clangd', 'coc-texlab', 'coc-python']
 let mapleader=" "
 let g:mapleader=" "
 
@@ -50,6 +50,7 @@ filetype plugin indent on
 syntax enable
 scriptencoding utf-8
 
+set exrc
 set scrolloff=7
 set wildmenu
 set history=1000
@@ -70,7 +71,7 @@ set smartcase
 set backspace=eol,start,indent
 set autoindent
 set textwidth=500
-set formatoptions=tcrqnlmj
+set formatoptions=tcqjrnl
 set ruler
 set background=dark
 set mouse=a
@@ -116,7 +117,7 @@ set undodir=$HOME/.config/nvim/.undodir
 set undofile
 set shell=$SHELL
 set termguicolors
-set clipboard+=unnamed,unnamedplus
+set clipboard+=unnamedplus
 set nopaste
 set noswapfile
 set numberwidth=4

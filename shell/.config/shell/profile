@@ -5,6 +5,7 @@ path=("$HOME/.local/bin" "$HOME/.cargo/bin" "$path[@]")
 export PATH
 
 export EDITOR="nvim"
+export PAGER="nvimpager"
 
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
